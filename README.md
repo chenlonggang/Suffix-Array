@@ -1,9 +1,9 @@
 #Suffix Array
 ##Where is it from
 we get the code from [here](http://math.cmu.edu/~lleung/project/Alfy_1.5/ExternSrc/DeepShallow64), and change integer type from 
-long long to long,which can save space when running on 
+long long to long,which can save space when running a
 32-bit OS and can deal big file when running a 64-bit 
-os.
+OS.
 ##How to use it
 1:include ds_ssort.h in you code  
 2:call overloop=init_ds_ssort(500,2000);  
