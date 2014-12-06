@@ -35,7 +35,7 @@ static int Verbose;
 static FILE *Infile;            // input file 
 static FILE *Outfile;           // output file
 
-static long Infile_size;         // size input file;
+static Int64 Infile_size;         // size input file;
 
 // ----- prototypes ---------
 void fatal_error (char *); // displays the text of the fatal error on the stderr
@@ -152,11 +152,11 @@ void ds_ssorter() {
 
   UChar *text;
   //int *sa, n, overshoot, i, extra_bytes;  // change type for 64-bit version
-  long *sa, n, overshoot, i;
+  Int64 *sa, n, overshoot, i;
   // int extra_bytes;  // for later use --> lcp
 
   double start, end;
-  long pos; // temp test variable 
+  Int64 pos; // temp test variable 
 
   // ----- init ds suffix sort routine
   // ?? this block should be rechecked for 64-bit version  because of changing the type of variables ******************

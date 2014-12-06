@@ -16,35 +16,35 @@ extern Int32 _ds_Word_size;        // # of bytes in a word in mkq
 //extern Int32 Mk_qs_thresh;         // recursion limit for mk quicksort: 
                                    // groups smaller than this are sorted 
                                    // using insertion sort
-extern long Mk_qs_thresh;         // 64 bit version
+extern Int64 Mk_qs_thresh;         // 64 bit version
 
 // ----- "local" global variables
 //Int32 Shallow_limit;               // Max depth for shallow sorting; 
-long Shallow_limit;               // Max depth for shallow sorting; 
+Int64 Shallow_limit;               // Max depth for shallow sorting; 
 UChar *Shallow_text_limit;         // Text + Shallow_limit
 
 #define UNROLL 1                   // if !=0 partially unroll shallow_mkq
 
 // ----- some prototypes -------------
 // void helped_sort(Int32 *a, Int32 n, Int32 depth); // void helped_sort(Int32 *a, int n, int depth)
-void helped_sort(long *a, long n, long depth); //64 bit version; maybe depth can be int32??
+void helped_sort(Int64 *a, Int64 n, Int64 depth); //64 bit version; maybe depth can be int32??
 
 //static void shallow_inssort_lcp(Int32 *a, Int32 n, UChar *text_depth);
-static void shallow_inssort_lcp(long *a, long n, UChar *text_depth); //64 bit version; 
+static void shallow_inssort_lcp(Int64 *a, Int64 n, UChar *text_depth); //64 bit version; 
 
 // --- static prototypes (gcc4 requires they are not inside functions) 
 //static void shallow_mkq(Int32 *a, int n, UChar *text_depth);
 //static void shallow_mkq16(Int32 *a, int n, UChar *text_depth);
 //static void shallow_mkq32(Int32 *a, int n, UChar *text_depth);
 
-static void shallow_mkq(long *a, long n, UChar *text_depth);    //64 bit version 
-static void shallow_mkq16(long *a, long n, UChar *text_depth);
-static void shallow_mkq32(long *a, long n, UChar *text_depth);
+static void shallow_mkq(Int64 *a, Int64 n, UChar *text_depth);    //64 bit version 
+static void shallow_mkq16(Int64 *a, Int64 n, UChar *text_depth);
+static void shallow_mkq32(Int64 *a, Int64 n, UChar *text_depth);
 
-static void shallow_mkq64(long *a, long n, UChar *text_depth); // new! - added for the 64 bit version
+static void shallow_mkq64(Int64 *a, Int64 n, UChar *text_depth); // new! - added for the 64 bit version
 
 // ***** entry point for shallow sort routines *****
-void shallow_sort(long *a, long n, long shallow_limit) 
+void shallow_sort(Int64 *a, Int64 n, Int64 shallow_limit) 
 { 
   // init global variables
   Shallow_limit = shallow_limit;        
@@ -74,10 +74,10 @@ void shallow_sort(long *a, long n, long shallow_limit)
 //#elif WIN
 //__inline 
 //#endif
-void vecswap2(long *a, long *b, long n) // 64 bit version
+void vecswap2(Int64 *a, Int64 *b, Int64 n) // 64 bit version
 { 
 	while (n-- > 0) {
-        long t = *a;
+        Int64 t = *a;
         *a++ = *b;
         *b++ = t;
     }
@@ -87,12 +87,12 @@ void vecswap2(long *a, long *b, long n) // 64 bit version
 #define ptr2char(i) (*(*(i) + text_depth))
 
 #if UNIX
-__inline__ long *med3func(long *a, long *b, long *c, UChar *text_depth) // 64 bit version
+__inline__ Int64 *med3func(Int64 *a, Int64 *b, Int64 *c, UChar *text_depth) // 64 bit version
 #elif WIN
-__inline long *med3func(long *a, long *b, long *c, UChar *text_depth) // 64 bit version
+__inline Int64 *med3func(Int64 *a, Int64 *b, Int64 *c, UChar *text_depth) // 64 bit version
 #endif
 {   //int va, vb, vc;
-		long va, vb, vc;
+		Int64 va, vb, vc;
     if ((va=ptr2char(a)) == (vb=ptr2char(b)))
         return a;
     if ((vc=ptr2char(c)) == va || vc == vb)
@@ -111,13 +111,13 @@ __inline long *med3func(long *a, long *b, long *c, UChar *text_depth) // 64 bit 
    have Shallow_limit chars in common
    ******************************************************** */
 //static void shallow_mkq(Int32 *a, int n, UChar *text_depth)
-static void shallow_mkq(long *a, long n, UChar *text_depth) // 64 bit version
+static void shallow_mkq(Int64 *a, Int64 n, UChar *text_depth) // 64 bit version
 {
-  //__inline__ void vecswap2(long *a, long *b, long n);
+  //__inline__ void vecswap2(Int64 *a, Int64 *b, Int64 n);
   //int d, r, partval;
   //Int32 *pa, *pb, *pc, *pd, *pl, *pm, *pn, t;
-  long d, r, partval; // 64 bit version
-  long *pa, *pb, *pc, *pd, *pl, *pm, *pn, t; 
+  Int64 d, r, partval; // 64 bit version
+  Int64 *pa, *pb, *pc, *pd, *pl, *pm, *pn, t; 
   
   UChar *next_depth;
 
@@ -209,14 +209,14 @@ Int32 *med3func16(Int32 *a, Int32 *b, Int32 *c, UChar *text_depth)
 #endif
 
 //static void shallow_mkq16(Int32 *a, int n, UChar *text_depth)
-static void shallow_mkq16(long *a, long n, UChar *text_depth) // 64 bit version
+static void shallow_mkq16(Int64 *a, Int64 n, UChar *text_depth) // 64 bit version
 {
   //__inline__ void vecswap2(Int32 *a, Int32 *b, int n);
-  //__inline__ void vecswap2(long *a, long *b, long n); // 64 bit version
+  //__inline__ void vecswap2(Int64 *a, Int64 *b, Int64 n); // 64 bit version
   //int d, r, partval;
   //Int32 *pa, *pb, *pc, *pd, *pl, *pm, *pn, t;
-  long d, r, partval; // 64 bit version
-  long *pa, *pb, *pc, *pd, *pl, *pm, *pn, t; 
+  Int64 d, r, partval; // 64 bit version
+  Int64 *pa, *pb, *pc, *pd, *pl, *pm, *pn, t; 
   UChar *next_depth;
 
 
@@ -292,14 +292,14 @@ static void shallow_mkq16(long *a, long n, UChar *text_depth) // 64 bit version
 #define getword32(s) ((unsigned)( (*(s) << 24) | ((*((s)+1)) << 16) \
                                   | ((*((s)+2)) << 8) | (*((s)+3)) ))
 //static void shallow_mkq32(Int32 *a, int n, UChar *text_depth)
-static void shallow_mkq32(long *a, long n, UChar *text_depth) //64-bit version
+static void shallow_mkq32(Int64 *a, Int64 n, UChar *text_depth) //64-bit version
 {
   //__inline__ void vecswap2(Int32 *a, Int32 *b, int n);
   //UInt32 partval, val;
   //Int32 *pa, *pb, *pc, *pd, *pl, *pm, *pn, t, d, r;
-  //__inline__ void vecswap2(long *a, long *b, long n); //64-bit version
-  ulong partval, val;
-  long *pa, *pb, *pc, *pd, *pl, *pm, *pn, t, d, r;
+  //__inline__ void vecswap2(Int64 *a, Int64 *b, Int64 n); //64-bit version
+  UInt64 partval, val;
+  Int64 *pa, *pb, *pc, *pd, *pl, *pm, *pn, t, d, r;
 
   UChar *next_depth;
 
@@ -372,20 +372,20 @@ static void shallow_mkq32(long *a, long n, UChar *text_depth) //64-bit version
 /********************* shallow_mkq64 - a new function added for 64 bit version **************/
 #define ptr2char64(i) ( getword64 (*(i) + text_depth) )
 
-#define getword64(s) ((ulong)  (   ( ((ulong)*(s)) << 56)       | ( ((ulong)(*((s)+1))) << 48) \
-                                  | ( ((ulong)(*((s)+2))) << 40) | ( ((ulong)(*((s)+3))) << 32) \
-                                  | ( ((ulong)(*((s)+4))) << 24) | ( ((ulong)(*((s)+5))) << 16) \
-                                  | ( ((ulong)(*((s)+6))) << 8)  | ( ((ulong)*((s)+7))) ))
+#define getword64(s) ((UInt64)  (   ( ((UInt64)*(s)) << 56)       | ( ((UInt64)(*((s)+1))) << 48) \
+                                  | ( ((UInt64)(*((s)+2))) << 40) | ( ((UInt64)(*((s)+3))) << 32) \
+                                  | ( ((UInt64)(*((s)+4))) << 24) | ( ((UInt64)(*((s)+5))) << 16) \
+                                  | ( ((UInt64)(*((s)+6))) << 8)  | ( ((UInt64)*((s)+7))) ))
 
 
-static void shallow_mkq64(long *a, long n, UChar *text_depth) //64-bit version
+static void shallow_mkq64(Int64 *a, Int64 n, UChar *text_depth) //64-bit version
 {
   //__inline__ void vecswap2(Int32 *a, Int32 *b, int n);
   //UInt32 partval, val;
   //Int32 *pa, *pb, *pc, *pd, *pl, *pm, *pn, t, d, r;
-  //__inline__ void vecswap2(long *a, long *b, long n); //64-bit version
-  ulong partval, val;
-  long *pa, *pb, *pc, *pd, *pl, *pm, *pn, t, d, r;
+  //__inline__ void vecswap2(Int64 *a, Int64 *b, Int64 n); //64-bit version
+  UInt64 partval, val;
+  Int64 *pa, *pb, *pc, *pd, *pl, *pm, *pn, t, d, r;
 
   UChar *next_depth;
 
@@ -477,14 +477,14 @@ static void shallow_mkq64(long *a, long n, UChar *text_depth) //64-bit version
    At exit Cmp_left has been decreased by the # of comparisons done   
    *********************************************************************** */ 
 //static Int32 Cmp_left;
-static long Cmp_left;
+static Int64 Cmp_left;
 
 //__inline__ 
 //Int32 cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2)
 #if UNIX
-static __inline__ long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit version
+static __inline__ Int64 cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit version
 #elif WIN
-static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit version
+static __inline Int64 cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit version
 #endif
 {
 
@@ -498,7 +498,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     c1 = *b1; c2 = *b2;
     if (c1 != c2) {
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     // 2
@@ -506,7 +506,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -=  1; 
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
 
     }
     b1++; b2++; 
@@ -515,7 +515,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -=  2; 
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     // 4
@@ -523,7 +523,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -=  3; 
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     // 5
@@ -531,7 +531,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -=  4; 
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     // 6
@@ -539,7 +539,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -=  5; 
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     // 7
@@ -547,7 +547,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -=  6;
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
 
     b1++; b2++; 
@@ -556,7 +556,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -=  7; 
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     // 9
@@ -564,7 +564,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -=  8; 
             //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     // 10
@@ -572,7 +572,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -=  9;       
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     
@@ -581,7 +581,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -= 10; 
             //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     
@@ -590,7 +590,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -= 11; 
             //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     
@@ -599,7 +599,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -= 12; 
             //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     
@@ -608,7 +608,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -= 13; 
             //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     
@@ -617,7 +617,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -= 14; 
       //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     
@@ -626,7 +626,7 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
     if (c1 != c2) {
       Cmp_left -= 15; 
             //return ((UInt32)c1 - (UInt32)c2); 
-      return ((ulong)c1 - (ulong)c2); 
+      return ((UInt64)c1 - (UInt64)c2); 
     }
     b1++; b2++; 
     
@@ -678,17 +678,17 @@ static __inline long cmp_unrolled_shallow_lcp(UChar *b1, UChar *b2) // 64 bit ve
    lcpi==lcp[j-3] then we must compare suf(ai) with suf(a[j-3])
    but starting with position lcpi
    ***************************************************************** */
-static long lcp_aux[1+Max_thresh]; //?? long long
-static long *lcp=lcp_aux+1;        //??
+static Int64 lcp_aux[1+Max_thresh]; //?? long long
+static Int64 *lcp=lcp_aux+1;        //??
 //static void shallow_inssort_lcp(Int32 *a, Int32 n, UChar *text_depth)
-static void shallow_inssort_lcp(long *a, long n, UChar *text_depth) // 64 bit version
+static void shallow_inssort_lcp(Int64 *a, Int64 n, UChar *text_depth) // 64 bit version
 {   
   //__inline__ Int32 cmp_unrolled_shallow_lcp(UChar *, UChar *);
-  //__inline__ long cmp_unrolled_shallow_lcp(UChar *, UChar *);
+  //__inline__ Int64 cmp_unrolled_shallow_lcp(UChar *, UChar *);
   //Int32 i, j, j1, lcp_new, r, ai,lcpi;
   //Int32 cmp_from_limit;
-  long i, j, j1, lcp_new, r, ai,lcpi;
-  long cmp_from_limit;
+  Int64 i, j, j1, lcp_new, r, ai,lcpi;
+  Int64 cmp_from_limit;
   UChar *text_depth_ai;
 
   // --------- initialize ----------------
@@ -731,7 +731,7 @@ static void shallow_inssort_lcp(long *a, long n, UChar *text_depth) // 64 bit ve
 
     }     // end for(j=i ...
     a[j]=ai;
-    lcp[j]=(long)lcpi;
+    lcp[j]=(Int64)lcpi;
   }       // end for(i=1 ... 
 
   // ----- done with insertion sort. now sort groups of equal strings

@@ -14,8 +14,8 @@
 // ----- external variables ----------
 //extern int Anchor_dist;
 //extern int Shallow_limit;
-extern long Anchor_dist;
-extern long Shallow_limit;
+extern Int64 Anchor_dist;
+extern Int64 Shallow_limit;
 extern int _ds_Verbose; 
 
 // ----- macros and costants --------------
@@ -24,18 +24,18 @@ extern int _ds_Verbose;
 
 /* ------ "local" global variables ------- */
 //Int32  Text_size;           // size of input string 
-long Text_size;           // size of input string for 64 bit version
+Int64 Text_size;           // size of input string for 64 bit version
 
 UChar  *Text;               // input string + overshoot
 
 // Int32  *Sa;                 // suffix array
-long *Sa;                    // suffix array for 64 bit version
+Int64 *Sa;                    // suffix array for 64 bit version
 
 UChar  *Upper_text_limit;   // Text + Text_size
 
 //Int32  *Anchor_rank;        // rank (in the sorted suffixes of the  
 //                            // anchor points (-1 if rank is unknown))
-long  *Anchor_rank;        // rank (in the sorted suffixes of the  
+Int64  *Anchor_rank;        // rank (in the sorted suffixes of the  
                             // anchor points (-1 if rank is unknown))
 
 //UInt16  *Anchor_offset;     // offset (wrt to the anchor) of the suffix ??
@@ -45,9 +45,9 @@ UInt32  *Anchor_offset;     // offset (wrt to the anchor) of the suffix ??
 //Int32 Anchor_num;           // number of anchor points
 //Int32 ftab [65537];      
 //Int32 runningOrder[256];
-long Anchor_num;           // number of anchor points ??
+Int64 Anchor_num;           // number of anchor points ??
 Int64 ftab [65537];         // the array of subbuckets for the alphabet 256 x 256
-long runningOrder[ALPHABET_SIZE];    // ??
+Int64 runningOrder[ALPHABET_SIZE];    // ??
 
 
 /* ------------------------------------------------------------------------
@@ -74,15 +74,15 @@ long runningOrder[ALPHABET_SIZE];    // ??
 //Int32 Calls_anchor_sort_backw=0;    
 //Int32 Calls_pseudo_anchor_sort_forw=0;      
 //Int32 Calls_deep_sort=0;     
-long Calls_helped_sort=0;     // 64 bit version
-long Calls_anchor_sort_forw=0;     
-long Calls_anchor_sort_backw=0;    
-long Calls_pseudo_anchor_sort_forw=0;      
-long Calls_deep_sort=0;     
+Int64 Calls_helped_sort=0;     // 64 bit version
+Int64 Calls_anchor_sort_forw=0;     
+Int64 Calls_anchor_sort_backw=0;    
+Int64 Calls_pseudo_anchor_sort_forw=0;      
+Int64 Calls_deep_sort=0;     
 
 // --- static prototypes (gcc4 requires they are not inside functions) 
 //static void check_ordering(int, int);
-//static void check_ordering(long, long);
+//static void check_ordering(Int64, Int64);
 static void calc_running_order ( void );
 
 /* ************************************************************
@@ -94,15 +94,15 @@ static void calc_running_order ( void );
    buckets ya (for any y including y=a).
    ************************************************************* */
 // void ds_ssort(UChar *x, Int32 *p, Int32 n)
-void ds_ssort(UChar *x, long *p, long n) { // 64-bit version
+void ds_ssort(UChar *x, Int64 *p, Int64 n) { // 64-bit version
 
   // void shallow_sort(Int32 *, int, int);
-	void shallow_sort(long *, long, long); // 64-bit version; shallow_sort(Int32 *a, int n, int shallow_limit) 
-	long compute_overshoot(void);
+	void shallow_sort(Int64 *, Int64, Int64); // 64-bit version; shallow_sort(Int32 *a, int n, int shallow_limit) 
+	Int64 compute_overshoot(void);
 
 	//Int32  i, j, ss, sb, k;
-  long  ss, sb, overshoot;
-  long  i, j, k; // 64 bit version
+  Int64  ss, sb, overshoot;
+  Int64  i, j, k; // 64 bit version
 
   UChar  c1, c2;
   Bool   bigDone[ALPHABET_SIZE];
@@ -110,9 +110,9 @@ void ds_ssort(UChar *x, long *p, long n) { // 64-bit version
   //Int32  copyStart[ALPHABET_SIZE];
   //Int32  copyEnd  [ALPHABET_SIZE];
   //Int32  numQSorted = 0;
-  long  copyStart[ALPHABET_SIZE]; // 64 bit version
-  long  copyEnd  [ALPHABET_SIZE];
-  long  numQSorted = 0;
+  Int64  copyStart[ALPHABET_SIZE]; // 64 bit version
+  Int64  copyEnd  [ALPHABET_SIZE];
+  Int64  numQSorted = 0;
 
   // ------ set some global variable ------
   Text = x;
@@ -133,7 +133,7 @@ void ds_ssort(UChar *x, long *p, long n) { // 64-bit version
   else {
     Anchor_num = 2 + (n - 1) / Anchor_dist;  // see comment for helped_sort() 
     //Anchor_rank = (Int32 *) malloc(Anchor_num * sizeof(Int32));
-	  Anchor_rank = (long *) malloc(Anchor_num * sizeof(long)); // 64-bit version
+	  Anchor_rank = (Int64 *) malloc(Anchor_num * sizeof(Int64)); // 64-bit version
     // Anchor_offset = (UInt16 *) malloc(Anchor_num * sizeof(UInt16));
 		Anchor_offset = (UInt32 *) malloc(Anchor_num * sizeof(UInt32));
     //if(!Anchor_rank || !Anchor_offset) {
@@ -211,8 +211,8 @@ void ds_ssort(UChar *x, long *p, long n) { // 64-bit version
 		if ( ! (ftab[sb] & SETMASK) ) {
 			//Int32 lo = ftab[sb]   & CLEARMASK;
 			//Int32 hi = (ftab[sb+1] & CLEARMASK) - 1;
-			long lo = ftab[sb]   & CLEARMASK;
-			long hi = (ftab[sb+1] & CLEARMASK) - 1;
+			Int64 lo = ftab[sb]   & CLEARMASK;
+			Int64 hi = (ftab[sb+1] & CLEARMASK) - 1;
 			if (hi > lo) {
 				if (_ds_Verbose>2) {
 					fprintf(stderr,"sorting [%02llx, %02llx], done %lld " // llx and lld --> for long long variable j, numqsorted and
@@ -278,16 +278,16 @@ void ds_ssort(UChar *x, long *p, long n) { // 64-bit version
  } // END FOR
 
  if (_ds_Verbose) {
-    fprintf(stderr, "\t %ld pointers, %ld sorted, %ld scanned\n",
+    fprintf(stderr, "\t %lld pointers, %lld sorted, %lld scanned\n",
 	      Text_size, numQSorted, Text_size - numQSorted ); // all variables are of type long long
-    fprintf(stderr, "\t %ld calls to helped_sort\n",Calls_helped_sort);      
-    fprintf(stderr, "\t %ld calls to anchor_sort (forward)\n",
+    fprintf(stderr, "\t %lld calls to helped_sort\n",Calls_helped_sort);      
+    fprintf(stderr, "\t %lld calls to anchor_sort (forward)\n",
 	    Calls_anchor_sort_forw);      
-    fprintf(stderr, "\t %ld calls to anchor_sort (backward)\n",
+    fprintf(stderr, "\t %lld calls to anchor_sort (backward)\n",
 	    Calls_anchor_sort_backw);      
-    fprintf(stderr, "\t %ld calls to pseudo_anchor_sort (forward)\n",
+    fprintf(stderr, "\t %lld calls to pseudo_anchor_sort (forward)\n",
     	    Calls_pseudo_anchor_sort_forw);      
-    fprintf(stderr, "\t %ld calls to deep_sort\n",Calls_deep_sort);      
+    fprintf(stderr, "\t %lld calls to deep_sort\n",Calls_deep_sort);      
   }
   // ---- done! ---------------------------------------- 
   free(Anchor_offset);
@@ -305,14 +305,14 @@ static
 void calc_running_order ( void )
 {
    //Int32 i, j;
-   long i, j;
+   Int64 i, j;
    for (i = 0; i <= 255; i++) runningOrder[i] = i;
 
    {
       //Int32 vv;
       //Int32 h = 1;
-      long vv;
-      long h = 1;
+      Int64 vv;
+      Int64 h = 1;
       do h = 3 * h + 1; while (h <= ALPHABET_SIZE);
       do {
          h = h / 3;
@@ -339,15 +339,15 @@ void calc_running_order ( void )
    ******************************************************** */
 /* static */
 //void check_ordering(int lo, int hi)
-/* void check_ordering(long lo, long hi) */
+/* void check_ordering(Int64 lo, Int64 hi) */
 /* { */
 /*   //int j1,jj,error; */
-/*   long j1,jj; // 64 bit version */
+/*   Int64 j1,jj; // 64 bit version */
 /*   int error; */
 
 /*   error=0; */
 /*   for(j1=lo;j1<hi;j1++) { */
-/*     //int scmp3(unsigned char *p, unsigned char *q, long *l, long maxl); // 64 bit version */
+/*     //int scmp3(unsigned char *p, unsigned char *q, Int64 *l, Int64 maxl); // 64 bit version */
 /*     if (scmp3(Text+Sa[j1], Text+Sa[j1+1], &jj,  */
 /* 	      MIN(Text_size-Sa[j1],Text_size-Sa[j1+1]))>=0) { */
 /*       for(jj=0;jj<10;jj++)  */

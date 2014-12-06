@@ -41,13 +41,13 @@ static FILE *Infile;               // input file
 //static FILE *Outfile;              // output file for the SA
 //static FILE *OutfileLCP;           // output file for the LCP array
 
-static long Infile_size;       // size input file;
+static Int64 Infile_size;       // size input file;
 
 /*********** new global variables; added because of LCP ****************/
 UChar *text; // input text
-long *sa;   // suffix array
-long n;     // number of char-s in the input text
-long *lcp, *lcp9; // lcp and lcp9 array
+Int64 *sa;   // suffix array
+Int64 n;     // number of char-s in the input text
+Int64 *lcp, *lcp9; // lcp and lcp9 array
 //int *lcp, *lcp9; // lcp and lcp9 array
 
 // ----- prototypes ---------
@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
   char *outfile_name;     // outfile --> array of sorted suffixes
   char *outfile_lcp_name; // outfile_lcp --> lcp array
   int c;
-  //extern char *optarg;
-  extern int optind, opterr,optopt;
+  extern char *optarg;
+  extern int optind, opterr, optopt;
 
   FILE *Outfile;              // output file for the SA
   FILE *OutfileLCP;           // output file for the LCP array
@@ -178,11 +178,11 @@ void ds_ssorter(FILE *Outfile) {
   //int *sa, n, overshoot, i, extra_bytes;  // change type for 64-bit version
   
   //UChar *text; // now a global var
-  // long *sa, n; // now global variables 
+  // Int64 *sa, n; // now global variables 
 
-  long overshoot, i;
+  Int64 overshoot, i;
   double start, end;
-  long pos; // temp test variable 
+  Int64 pos; // temp test variable 
 
   // ----- init ds suffix sort routine
   // ?? this block should be rechecked for 64-bit version  because of changing the type of variables ******************
@@ -216,7 +216,7 @@ void ds_ssorter(FILE *Outfile) {
   if(i != n) {
 	  fatal_error("Error reading the input file!");
   }
-  fprintf(stdout,"File size: %ld\n", n);
+  fprintf(stdout,"File size: %lld\n", n);
 
   // ----- build suffix array ----------------
   // ?? this block should be rechecked for 64-bit version because it uses sa and n ******************
@@ -228,10 +228,10 @@ void ds_ssorter(FILE *Outfile) {
   // control output
   #if 1 // debug
      for (pos = 1; pos <= n; pos ++ ) { // write first 50 char-s of suffix
-       fprintf(Outfile, "%ld %-50.50s\n", sa[pos] + 1, text + sa[pos]); // suffixes are sorted from 1st position to n-th
+       fprintf(Outfile, "%lld %-50.50s\n", sa[pos] + 1, text + sa[pos]); // suffixes are sorted from 1st position to n-th
        if (pos >= 10) {
          // before break, print the last suffix ; that is at most 10+1 suffixes 
-         fprintf(Outfile, "\n\n%ld %-50.50s\n", sa[n] + 1, text + sa[n]); // suffixes are sorted from 1st position to n-th
+         fprintf(Outfile, "\n\n%lld %-50.50s\n", sa[n] + 1, text + sa[n]); // suffixes are sorted from 1st position to n-th
          break; // this is just for testing; break after first 10+1 
        }
      }
@@ -248,7 +248,7 @@ void lcp_file(FILE *OutfileLCP)
 {
   //void cmp_lcp_array(int *lcp1, char *name1, int *lcp2, char *name2, int n);
   //void check_lcp_array(uint8 *t, int n, int *sa, int *lcp);
-  void cmp_lcp_array(long *, char *, long *, char *);
+  void cmp_lcp_array(Int64 *, char *, Int64 *, char *);
   void check_lcp_array();
 
   //UChar *text;
@@ -256,14 +256,14 @@ void lcp_file(FILE *OutfileLCP)
   //int occ[ALPHABET_SIZE], *lcp9, *lcp=NULL;
   //bwt_data b;
   //double start, end;
-  //ulong tot_lcp;
+  //uint64 tot_lcp;
 
-  //long *sa, n, overshoot; // sa and n are now globals and overshoot is used in ds_sorter
-  long i; //, extra_bytes;
-  long occ[ALPHABET_SIZE]; //*lcp9, *lcp=NULL; --> lcp-s are now global variables
+  //Int64 *sa, n, overshoot; // sa and n are now globals and overshoot is used in ds_sorter
+  Int64 i; //, extra_bytes;
+  Int64 occ[ALPHABET_SIZE]; //*lcp9, *lcp=NULL; --> lcp-s are now global variables
   //bwt_data b;
   double start, end;
- // Ulong tot_lcp;
+  UInt64 tot_lcp;
   
   // ---- compute lcp using 9n algorithm  
   lcp=NULL;
@@ -336,7 +336,7 @@ void lcp_file(FILE *OutfileLCP)
   //cmp_lcp_array(sa, "lcp6", lcp9, "lcp9");
 
   // ---- compute average lcp (which is now in sa[])
- // tot_lcp=0;
+  tot_lcp=0;
   //for(i=1;i<n;i++) 
 //  for(i=2;i<n;i++) // exclude lcp[1] because it is undefined!!
 //    tot_lcp += sa[i]; // but this only if sa is used for lcp, otherwise the lcp array should be used
@@ -360,10 +360,10 @@ void lcp_file(FILE *OutfileLCP)
    compare the lcp arrays cmputed by algs. name1, name2
    ******************************************************************* */ 
 //void cmp_lcp_array(int *lcp1, char *name1, int *lcp2, char *name2, int n)
-void cmp_lcp_array(long *lcp1, char *name1, long *lcp2, char *name2)
+void cmp_lcp_array(Int64 *lcp1, char *name1, Int64 *lcp2, char *name2)
 {
   //int i, diff;
-  long i, diff;
+  Int64 i, diff;
   
   diff=0;
   for(i=2;i<=n;i++)
@@ -371,12 +371,12 @@ void cmp_lcp_array(long *lcp1, char *name1, long *lcp2, char *name2)
       diff++; 
       if(Verbose>1)
 	      //fprintf(stdout,"%s[%d]=%d  %s[%d]=%d\n", name1,i,lcp1[i],name2,i,lcp2[i]);
-        fprintf(stdout,"%s[%ld]=%ld  %s[%ld]=%ld\n", name1,i,lcp1[i],name2,i,lcp2[i]);
+        fprintf(stdout,"%s[%lld]=%lld  %s[%lld]=%lld\n", name1,i,lcp1[i],name2,i,lcp2[i]);
     }
   
   if(diff>0)
     //fprintf(stdout,"FATAL ERROR! %s/%s differences: %d\n",name1,name2,diff);
-    fprintf(stdout,"FATAL ERROR! %s/%s differences: %ld\n",name1,name2,diff);
+    fprintf(stdout,"FATAL ERROR! %s/%s differences: %lld\n",name1,name2,diff);
 }
 
 /* *******************************************************************
@@ -387,7 +387,7 @@ void cmp_lcp_array(long *lcp1, char *name1, long *lcp2, char *name2)
 void check_lcp_array()
 {
   //int i,j,k,h;
-  long i,j,k,h;
+  Int64 i,j,k,h;
 
   for(i=2;i<n;i++) {
     j = sa[i-1]; k=sa[i];
@@ -395,7 +395,7 @@ void check_lcp_array()
       if(text[j+h]!=text[k+h]) break;
     if(lcp9[i]!=h) {
       //fprintf(stdout,"FATAL ERROR! Incorrect LCP value: lcp[%d]=%d!=%d\n",i,lcp[i],h);
-      fprintf(stdout,"FATAL ERROR! Incorrect LCP value: lcp[%ld]=%ld!=%ld\n",i,lcp9[i],h);
+      fprintf(stdout,"FATAL ERROR! Incorrect LCP value: lcp[%lld]=%lld!=%lld\n",i,lcp9[i],h);
       return;
     }
   }
@@ -490,8 +490,8 @@ void printLCP(char *lcpType, FILE *OutfileLCP) {
   
   void printLine(FILE *);
 
-  long pos;
-  //long *lcpPrint; // local pointer to the beginning of the array lcp or lcp9, depending on the lcpType
+  Int64 pos;
+  //Int64 *lcpPrint; // local pointer to the beginning of the array lcp or lcp9, depending on the lcpType
   int *lcpPrint; // local pointer to the beginning of the array lcp or lcp9, depending on the lcpType
   char lcpText[50 + 1]; // a string containing at most first 50 char-s of the lcp starting at the position pos
   int lcpLength; // the length of the lcp starting at the position pos  
@@ -548,8 +548,8 @@ void printLine(FILE *OutfileLCP) {
 //  
 //  void printLine(FILE *);
 //
-//  long pos;
-//  long *lcpPrint; // local pointer to the beginning of the array lcp or lcp9, depending on the lcpType
+//  Int64 pos;
+//  Int64 *lcpPrint; // local pointer to the beginning of the array lcp or lcp9, depending on the lcpType
 //
 //  lcpPrint = sa;
 //  fprintf(OutfileLCP, " ============================================= lcp6 ==============================================================\n");

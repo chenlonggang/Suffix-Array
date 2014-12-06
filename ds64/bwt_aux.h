@@ -16,8 +16,8 @@ typedef struct {
   UChar *bwt;
   //int size;
   //int eof_pos;
-  long size;
-  long eof_pos;
+  Int64 size;
+  Int64 eof_pos;
 } bwt_data;
 
 
@@ -35,17 +35,17 @@ typedef struct {
 //void _bw_rankprev2sa(int32 *rank_prev, int32 n, int32 rn1, int32 *sa);
 
 // 64 bit versions
-void _bw_sa2bwt(UChar *t, long n, long *sa, bwt_data *b);
+void _bw_sa2bwt(UChar *t, Int64 n, Int64 *sa, bwt_data *b);
 
-long _bw_bwt2ranknext(bwt_data *b, long* occ, long *rank_next);
-long _bw_sa2ranknext(UChar *t, long n, long *sa, long *occ, long *rank_next);
+Int64 _bw_bwt2ranknext(bwt_data *b, Int64* occ, Int64 *rank_next);
+Int64 _bw_sa2ranknext(UChar *t, Int64 n, Int64 *sa, Int64 *occ, Int64 *rank_next);
 
-void _bw_ranknext2t(long *rank_next, long r0, bwt_data *b, UChar *t);
-void _bw_ranknext2sa(long *rank_next, long r0, long *sa);
+void _bw_ranknext2t(Int64 *rank_next, Int64 r0, bwt_data *b, UChar *t);
+void _bw_ranknext2sa(Int64 *rank_next, Int64 r0, Int64 *sa);
 
-long _bw_bwt2rankprev(bwt_data *b, long* occ, long *rank_prev);
-long _bw_sa2rankprev(UChar *t, long n, long *sa, long *occ, long *rank_prev);
-void _bw_rankprev2t(long *rank_prev, long rn1, bwt_data *b, UChar *t);
-void _bw_rankprev2sa(long *rank_prev, long n, long rn1, long *sa);
+Int64 _bw_bwt2rankprev(bwt_data *b, Int64* occ, Int64 *rank_prev);
+Int64 _bw_sa2rankprev(UChar *t, Int64 n, Int64 *sa, Int64 *occ, Int64 *rank_prev);
+void _bw_rankprev2t(Int64 *rank_prev, Int64 rn1, bwt_data *b, UChar *t);
+void _bw_rankprev2sa(Int64 *rank_prev, Int64 n, Int64 rn1, Int64 *sa);
 
 #endif //BWT_AUX_H

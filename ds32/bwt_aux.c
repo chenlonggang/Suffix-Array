@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "common.h"
 #include "bwt_aux.h"
 
 /* ==================================================================
@@ -59,12 +58,9 @@
      bwt_data *b
    space: 6n
    ******************************************************************* */   
-//void _bw_sa2bwt(uchar *t, int32 n, int32 *sa, bwt_data *b)
-void _bw_sa2bwt(UChar *t, long n, long *sa, bwt_data *b)
-
+void _bw_sa2bwt(uchar *t, int32 n, int32 *sa, bwt_data *b)
 {
-  //int i;
-  long i;
+  int i;
 
   assert(b->bwt!=NULL);
   b->size = n;
@@ -90,18 +86,14 @@ void _bw_sa2bwt(UChar *t, long n, long *sa, bwt_data *b)
      r0 = rank of t[0,n-1], sa[r0]=0 
    space 5n
    ******************************************************************* */
-//int32 _bw_bwt2ranknext(bwt_data *b, int32* occ, int32 *rank_next)
-long _bw_bwt2ranknext(bwt_data *b, long* occ, long *rank_next)
-
+int32 _bw_bwt2ranknext(bwt_data *b, int32* occ, int32 *rank_next)
 {
-  //int32 i,j,n,c,r0=0;
-  //int32 count[ALPHABET_SIZE];
-  long i,j,n,c,r0=0;
-  long count[ALPHABET_SIZE];
+  int32 i,j,n,c,r0=0;
+  int32 count[_BW_ALPHA_SIZE];
 
   // --- occ -> count
   count[0]=0;
-  for(i=1;i<ALPHABET_SIZE;i++)
+  for(i=1;i<_BW_ALPHA_SIZE;i++)
     count[i] = count[i-1] + occ[i-1];
   // --- bwt -> rank_next
   n = b->size;
@@ -129,17 +121,14 @@ long _bw_bwt2ranknext(bwt_data *b, long* occ, long *rank_next)
     r0 = rank of t[0,n-1], sa[r0]=0 
   space 8n
    ******************************************************************* */
-//int32 _bw_sa2ranknext(uchar *t, int32 n, int32 *sa, int32 *occ, 
-//                      int32 *rank_next)
-long _bw_sa2ranknext(UChar *t, long n, long *sa, long *occ, long *rank_next)
-/* long _bw_sa2ranknext(UChar *t, long n, long *sa, long *occ, int *rank_next) rank_next can have long bit values also !!*/
+int32 _bw_sa2ranknext(uchar *t, int32 n, int32 *sa, int32 *occ, 
+                      int32 *rank_next)
 {
-  //int32 i,j,c,r0=0,count[ALPHABET_SIZE];
-  long i,j,c,r0=0,count[ALPHABET_SIZE];
+  int32 i,j,c,r0=0,count[_BW_ALPHA_SIZE];
 
   // --- occ -> count
   count[0]=0;
-  for(i=1;i<ALPHABET_SIZE;i++)
+  for(i=1;i<_BW_ALPHA_SIZE;i++)
     count[i] = count[i-1] + occ[i-1];
   // --- sa+t -> rank_next
   j = ++count[t[n-1]];       // this is bwt[0]
@@ -150,7 +139,7 @@ long _bw_sa2ranknext(UChar *t, long n, long *sa, long *occ, long *rank_next)
     else {
       c = t[sa[i]-1];
       j = ++count[c];
-      rank_next[j]=i; /* i can be long, so rank_next can have long bit values also!*/
+      rank_next[j]=i;
     }
   assert(r0>0);
   return r0;
@@ -164,11 +153,9 @@ long _bw_sa2ranknext(UChar *t, long n, long *sa, long *occ, long *rank_next)
      t[]
    space 6n
    ******************************************************************* */
-//void _bw_ranknext2t(int32 *rank_next, int32 r0, bwt_data *b, uchar *t)
-void _bw_ranknext2t(long *rank_next, long r0, bwt_data *b, UChar *t)
+void _bw_ranknext2t(int32 *rank_next, int32 r0, bwt_data *b, uchar *t)
 { 
-  //int32 k,i;
-  long k,i;
+  int32 k,i;
 
   k = r0; i=0;
   do {
@@ -186,12 +173,9 @@ void _bw_ranknext2t(long *rank_next, long r0, bwt_data *b, UChar *t)
      sa
    space 4n (in place)/8n
    ******************************************************************* */
-//void _bw_ranknext2sa(int32 *rank_next, int32 r0, int32 *sa)
-void _bw_ranknext2sa(long *rank_next, long r0, long *sa)
-
+void _bw_ranknext2sa(int32 *rank_next, int32 r0, int32 *sa)
 {
-  //int32 k, nextk, i;
-  long k, nextk, i;
+  int32 k, nextk, i;
 
   // --- if sa==NULL sa entries are written to rank_next 
   if(sa==NULL)
@@ -222,18 +206,14 @@ void _bw_ranknext2sa(long *rank_next, long r0, long *sa)
      rn1 = rank of t[n-1], sa[rn1]=n-1 
    space 5n
    ******************************************************************* */
-//int32 _bw_bwt2rankprev(bwt_data *b, int32* occ, int32 *rank_prev)
-long _bw_bwt2rankprev(bwt_data *b, long* occ, long *rank_prev)
-
+int32 _bw_bwt2rankprev(bwt_data *b, int32* occ, int32 *rank_prev)
 {
-  //int32 i,j,n,c,rn1;
-  //int32 count[ALPHABET_SIZE];
-  long i,j,n,c,rn1;
-  long count[ALPHABET_SIZE];
+  int32 i,j,n,c,rn1;
+  int32 count[_BW_ALPHA_SIZE];
 
   // --- occ -> count
   count[0]=0;
-  for(i=1;i<ALPHABET_SIZE;i++)
+  for(i=1;i<_BW_ALPHA_SIZE;i++)
     count[i] = count[i-1] + occ[i-1];
   // --- bwt -> rank_next
   n = b->size;
@@ -258,21 +238,18 @@ long _bw_bwt2rankprev(bwt_data *b, long* occ, long *rank_prev)
      rn1 = rank of t[n-1], sa[rn1]=n-1 
    space 8n/ 4n (in place)
    ******************************************************************* */
-//int32 _bw_sa2rankprev(uchar *t, int32 n, int32 *sa, int32 *occ, 
-//                      int32 *rank_prev)
-long _bw_sa2rankprev(UChar *t, long n, long *sa, long *occ, long *rank_prev)
+int32 _bw_sa2rankprev(uchar *t, int32 n, int32 *sa, int32 *occ, 
+                      int32 *rank_prev)
 {
-  //int32 i,j,c,rn1;
-  //int32 count[ALPHABET_SIZE];
-  long i,j,c,rn1;
-  long count[ALPHABET_SIZE];
+  int32 i,j,c,rn1;
+  int32 count[_BW_ALPHA_SIZE];
 
   // --- if rank_prev==NULL rank_prev entries are overwritten in sa
   if(rank_prev==NULL)
     rank_prev=sa;
   // --- occ -> count
   count[0]=0;
-  for(i=1;i<ALPHABET_SIZE;i++)
+  for(i=1;i<_BW_ALPHA_SIZE;i++)
     count[i] = count[i-1] + occ[i-1];
   // --- (t+sa) -> rank_prev
   j = ++count[t[n-1]];
@@ -295,12 +272,9 @@ long _bw_sa2rankprev(UChar *t, long n, long *sa, long *occ, long *rank_prev)
      t[]
    space 6n
    ******************************************************************* */
-//void _bw_rankprev2t(int32 *rank_prev, int32 rn1, bwt_data *b, uchar *t)
-void _bw_rankprev2t(long *rank_prev, long rn1, bwt_data *b, UChar *t)
-
+void _bw_rankprev2t(int32 *rank_prev, int32 rn1, bwt_data *b, uchar *t)
 { 
-  //int32 k,i,n;
-  long k,i,n;
+  int32 k,i,n;
 
   n = b->size;          // size of t     
   t[n-1] = b->bwt[0];   // last char of t is bwt[0] 
@@ -321,12 +295,9 @@ void _bw_rankprev2t(long *rank_prev, long rn1, bwt_data *b, UChar *t)
      sa
    space 4n (in place)/8n
    ******************************************************************* */
-//void _bw_rankprev2sa(int32 *rank_prev, int32 n, int32 rn1, int32 *sa)
-void _bw_rankprev2sa(long *rank_prev, long n, long rn1, long *sa)
-
+void _bw_rankprev2sa(int32 *rank_prev, int32 n, int32 rn1, int32 *sa)
 {
-  //int32 k, prevk, i;
-  long k, prevk, i;
+  int32 k, prevk, i;
 
   // --- if sa==NULL sa entries are written to rank_prev 
   if(sa==NULL)
@@ -351,11 +322,9 @@ void _bw_rankprev2sa(long *rank_prev, long n, long rn1, long *sa)
      r0 (rank[0])
    space: 4n (in place)/8n
    ******************************************************************* */
-//int _bw_rprev2rnext(int32 *rank_prev, int32 rn1, int32 *rank_next)
-long _bw_rprev2rnext(long *rank_prev, long rn1, long *rank_next) // this function is never used and it could be removed
+int _bw_rprev2rnext(int32 *rank_prev, int32 rn1, int32 *rank_next)
 {
-  //int32 rprec, rcur,rnext;
-  long rprec, rcur,rnext;
+  int32 rprec, rcur,rnext;
 
   // --- if rank_next==NULL rank_next entries are written to rank_prev 
   if(rank_next==NULL)

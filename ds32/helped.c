@@ -9,81 +9,47 @@
 #include <limits.h>
 #include "common.h"
 
-// ----------------- external variables 32 bit version ---------------------
-//extern Int32 Anchor_dist;       // Distance between anchors
-//extern Int32 Anchor_num;        // Number of anchor points
-//extern Int32 *Anchor_rank;      // rank (in the sorted suffixes of the  
-//                                // anchor points (-1 if rank is unknown)
-//extern UInt16 *Anchor_offset;   // offset (wrt to the anchor) of the suffix
-//                                // whose rank is in Anchor_rank. 
-//
-//extern UChar *Text;               // start of input string
-//extern Int32 ftab[];              // table of buckets endpoints
-//extern Int32 *Sa;                 // suffix array
-//extern Int32 Max_pseudo_anchor_offset; // maximum offset considered when 
-//                                       // searching a pseudo anchor
-//extern Int32 B2g_ratio;           // maximum ratio bucket_size/group_size
-//                                  // accepted for pseudo anchor_sorting
-//extern Int32 Update_anchor_ranks; // if!=0 update anchor ranks when determining
-//                                  // rank for pseudo-sorting
-//
-//extern Int32 Calls_helped_sort;     
-//extern Int32 Calls_anchor_sort_forw;     
-//extern Int32 Calls_anchor_sort_backw;     
-//extern Int32 Calls_pseudo_anchor_sort_forw;     
-
-
-// ----------------- external variables 64 bit version ---------------------
-extern long Anchor_dist;       // Distance between anchors
-extern long Anchor_num;        // Number of anchor points
-extern long *Anchor_rank;      // rank (in the sorted suffixes of the  
+// ----------------- external variables ---------------------
+extern Int32 Anchor_dist;       // Distance between anchors
+extern Int32 Anchor_num;        // Number of anchor points
+extern Int32 *Anchor_rank;      // rank (in the sorted suffixes of the  
                                 // anchor points (-1 if rank is unknown)
-extern UInt32 *Anchor_offset;   // offset (wrt to the anchor) of the suffix
+extern UInt16 *Anchor_offset;   // offset (wrt to the anchor) of the suffix
                                 // whose rank is in Anchor_rank. 
 
 extern UChar *Text;               // start of input string
-extern long ftab[];              // table of buckets endpoints
-extern long *Sa;                 // suffix array
-extern long Max_pseudo_anchor_offset; // maximum offset considered when 
+extern Int32 ftab[];              // table of buckets endpoints
+extern Int32 *Sa;                 // suffix array
+extern Int32 Max_pseudo_anchor_offset; // maximum offset considered when 
                                        // searching a pseudo anchor
-extern long B2g_ratio;           // maximum ratio bucket_size/group_size
+extern Int32 B2g_ratio;           // maximum ratio bucket_size/group_size
                                   // accepted for pseudo anchor_sorting
-extern long Update_anchor_ranks; // if!=0 update anchor ranks when determining
+extern Int32 Update_anchor_ranks; // if!=0 update anchor ranks when determining
                                   // rank for pseudo-sorting
 
-extern long Calls_helped_sort;     
-extern long Calls_anchor_sort_forw;     
-extern long Calls_anchor_sort_backw;     
-extern long Calls_pseudo_anchor_sort_forw;     
+extern Int32 Calls_helped_sort;     
+extern Int32 Calls_anchor_sort_forw;     
+extern Int32 Calls_anchor_sort_backw;     
+extern Int32 Calls_pseudo_anchor_sort_forw;     
 
 // function for deep sorting the suffixes in a[0] .. a[n-1]
 // deep is the length of the prefixes known to be equal in all suffixes
-// void deep_sort(Int32 *a, Int32 n, Int32 depth);
-void deep_sort(long *a, long n, long depth); // 64 bit version
+void deep_sort(Int32 *a, Int32 n, Int32 depth);
 
 // macro to compute the bucket for the suffix
 // starting at pos. Note that since pos is evaluated twice
 // it should be an expression without side-effects
 #define Get_small_bucket(pos) ((Text[pos]<<8) + Text[pos+1])
 
-// --- static prototypes (gcc4 requires they are not inside functions) 32 bit version
-//static 
-//void general_anchor_sort(Int32 *a,Int32 n,Int32 pos,Int32 rank,Int32 off);
-//static 
-//void pseudo_anchor_sort(Int32 *a, Int32 n,Int32 pseudo_an,Int32 offset);
-//static Int32 split_group(Int32 *a, int n, int,int,Int32,int *);
-//static void update_anchors(Int32 *a, Int32 n);
-//static void pseudo_or_deep_sort(Int32 *a, Int32 n, Int32 depth);
+// --- static prototypes (gcc4 requires they are not inside functions) 
+static 
+void general_anchor_sort(Int32 *a,Int32 n,Int32 pos,Int32 rank,Int32 off);
+static 
+void pseudo_anchor_sort(Int32 *a, Int32 n,Int32 pseudo_an,Int32 offset);
+static Int32 split_group(Int32 *a, int n, int,int,Int32,int *);
+static void update_anchors(Int32 *a, Int32 n);
+static void pseudo_or_deep_sort(Int32 *a, Int32 n, Int32 depth);
 
-// --- static prototypes (gcc4 requires they are not inside functions) - 64 bit version
-static void general_anchor_sort(long *a,long n,long pos,long rank,long off);
-static void pseudo_anchor_sort(long *a, long n,long pseudo_an,long offset);
-static long split_group(long *a, long n, long, long, long, long *); // ??
-
-// Int32 split_group(Int32 *a, int n, int depth,int offset,Int32 pivot,int *first)
-
-static void update_anchors(long *a, long n);
-static void pseudo_or_deep_sort(long *a, long n, long depth);
 
 
 /* *****************************************************************
@@ -99,20 +65,13 @@ static void pseudo_or_deep_sort(long *a, long n, long depth);
    Anchor_ofset[] and Anchor_rank[] defined in ds_sort()) as
      Anchor_num = 2 + (n-1)/Anchor_dist    
    ***************************************************************** */
-//void helped_sort(Int32 *a, int n, int depth)
-void helped_sort(long *a, long n, long depth) // 64 bit version
+void helped_sort(Int32 *a, int n, int depth)
 { 
-  //Int32 i, curr_sb, diff, toffset, aoffset;
-  //Int32 text_pos, anchor_pos, anchor, anchor_rank;
-  //Int32 min_forw_offset, min_forw_offset_buc, max_back_offset;
-  //Int32 best_forw_anchor, best_forw_anchor_buc, best_back_anchor; 
-  //Int32 forw_anchor_index, forw_anchor_index_buc, back_anchor_index;
-  // 64 bit version
-  long i, curr_sb, diff, toffset, aoffset;
-  long text_pos, anchor_pos, anchor, anchor_rank;
-  long min_forw_offset, min_forw_offset_buc, max_back_offset;
-  long best_forw_anchor, best_forw_anchor_buc, best_back_anchor; 
-  long forw_anchor_index, forw_anchor_index_buc, back_anchor_index;
+  Int32 i, curr_sb, diff, toffset, aoffset;
+  Int32 text_pos, anchor_pos, anchor, anchor_rank;
+  Int32 min_forw_offset, min_forw_offset_buc, max_back_offset;
+  Int32 best_forw_anchor, best_forw_anchor_buc, best_back_anchor; 
+  Int32 forw_anchor_index, forw_anchor_index_buc, back_anchor_index;
 
   Calls_helped_sort++;          // update count
   if(n==1) goto done_sorting;    // simplest case: only one string
@@ -127,10 +86,8 @@ void helped_sort(long *a, long n, long depth) // 64 bit version
   curr_sb = Get_small_bucket(a[0]);
 
   // init best anchor variables with illegal values
-//  min_forw_offset = min_forw_offset_buc = INT_MAX;
-//  max_back_offset = INT_MIN;
-  min_forw_offset = min_forw_offset_buc = LLONG_MAX;
-  max_back_offset = LLONG_MIN;
+  min_forw_offset = min_forw_offset_buc = INT_MAX;
+  max_back_offset = INT_MIN;
   best_forw_anchor = best_forw_anchor_buc = best_back_anchor = -1; 
   forw_anchor_index = forw_anchor_index_buc = back_anchor_index = -1;
   // look at the anchor preceeding each a[i]
@@ -144,46 +101,46 @@ void helped_sort(long *a, long n, long depth) // 64 bit version
       diff = aoffset - toffset;
       assert(diff!=0);
       if(diff>0) {     // anchor <=  a[i] < (sorted suffix)
-				if(curr_sb!=Get_small_bucket(text_pos+diff)) {
-					if(diff<min_forw_offset) {
-						min_forw_offset = diff;
-						best_forw_anchor = anchor;
-						forw_anchor_index = i;
-					}
-				}
-				else {  // the sorted suffix belongs to the same bucket of a[0]..a[n-1]
-					if(diff<min_forw_offset_buc) {
-						min_forw_offset_buc = diff;
-						best_forw_anchor_buc = anchor;
-						forw_anchor_index_buc = i;
-					}
-				}
+	if(curr_sb!=Get_small_bucket(text_pos+diff)) {
+	  if(diff<min_forw_offset) {
+	    min_forw_offset = diff;
+	    best_forw_anchor = anchor;
+	    forw_anchor_index = i;
+	  }
+	}
+	else {  // the sorted suffix belongs to the same bucket of a[0]..a[n-1]
+	  if(diff<min_forw_offset_buc) {
+	    min_forw_offset_buc = diff;
+	    best_forw_anchor_buc = anchor;
+	    forw_anchor_index_buc = i;
+	  }
+	}
       }
       else {          // diff<0 =>  anchor <= (sorted suffix) < a[i]
-				if(diff>max_back_offset) {
-					max_back_offset = diff;
-					best_back_anchor = anchor;
-					back_anchor_index = i;
-				}
-				// try to find a sorted suffix > a[i] by looking at next anchor
-				aoffset = Anchor_offset[++anchor];
-				if(aoffset<Anchor_dist) {
-					diff = Anchor_dist + aoffset - toffset;
-					assert(diff>0);
-					if(curr_sb!=Get_small_bucket(text_pos+diff)) {
-						if(diff<min_forw_offset) {
-							min_forw_offset = diff;
-							best_forw_anchor = anchor;
-							forw_anchor_index = i;
-						}
-					} else {
-						if(diff<min_forw_offset_buc) {
-							min_forw_offset_buc = diff;
-							best_forw_anchor_buc = anchor;
-							forw_anchor_index_buc = i;
-						}
-					}
-				}
+	if(diff>max_back_offset) {
+	  max_back_offset = diff;
+	  best_back_anchor = anchor;
+	  back_anchor_index = i;
+	}
+	// try to find a sorted suffix > a[i] by looking at next anchor
+	aoffset = Anchor_offset[++anchor];
+	if(aoffset<Anchor_dist) {
+	  diff = Anchor_dist + aoffset - toffset;
+	  assert(diff>0);
+	  if(curr_sb!=Get_small_bucket(text_pos+diff)) {
+	    if(diff<min_forw_offset) {
+	      min_forw_offset = diff;
+	      best_forw_anchor = anchor;
+	      forw_anchor_index = i;
+	    }
+	  } else {
+	    if(diff<min_forw_offset_buc) {
+	      min_forw_offset_buc = diff;
+	      best_forw_anchor_buc = anchor;
+	      forw_anchor_index_buc = i;
+	    }
+	  }
+	}
       }
     }
   }
@@ -193,30 +150,26 @@ void helped_sort(long *a, long n, long depth) // 64 bit version
     assert(min_forw_offset<2*Anchor_dist);
     anchor_pos = a[forw_anchor_index] + min_forw_offset;
     anchor_rank = Anchor_rank[best_forw_anchor];
-//		#if DEBUG 
-//			printf("anchor_pos = %lld anchor_rank = %lld Sa[anchor_rank] = %lld", anchor_pos, anchor_rank, Sa[anchor_rank]);
-//		#endif
-
     assert(Sa[anchor_rank]==anchor_pos);
     general_anchor_sort(a,n,anchor_pos,anchor_rank,min_forw_offset);
     goto done_sorting;
   }
   // ------ if backward anchor_sort is possible do it! ---------
   if(best_back_anchor>=0) {
-    UChar *T0, *Ti; long j;
+    UChar *T0, *Ti; int j;
 
     assert(max_back_offset>-Anchor_dist && max_back_offset<0);
     // make sure that the offset is legal for all a[i]
     for(i=0;i<n;i++) {
       if(a[i]+max_back_offset<0) 
-				goto fail;                    // illegal offset, give up
+	goto fail;                    // illegal offset, give up
     }
     // make sure that a[0] .. a[n-1] are preceded by the same substring
     T0 = Text + a[0];
     for(i=1;i<n;i++) {
       Ti = Text + a[i];
       for(j=max_back_offset; j<= -1; j++)
-				if(T0[j]!=Ti[j]) goto fail;   // mismatch, give up
+	if(T0[j]!=Ti[j]) goto fail;   // mismatch, give up
     }
     // backward anchor sorting is possible
     Calls_anchor_sort_backw++;
@@ -229,8 +182,7 @@ void helped_sort(long *a, long n, long depth) // 64 bit version
  fail:
   // ----- try forward anchor_sort with anchor in the same bucket
   if(best_forw_anchor_buc>=0 && min_forw_offset_buc<depth-1) {
-    //int equal,lower,upper;
-    long equal,lower,upper; // 64 bit version
+    int equal,lower,upper;
 
     assert(min_forw_offset_buc<2*Anchor_dist);
     anchor_pos = a[forw_anchor_index_buc] + min_forw_offset_buc;
@@ -277,12 +229,10 @@ void helped_sort(long *a, long n, long depth) // 64 bit version
 /* *******************************************************************
    try pseudo_anchor sort or deep_sort
    ******************************************************************** */
-//static void pseudo_or_deep_sort(Int32 *a, Int32 n, Int32 depth)
-static void pseudo_or_deep_sort(long *a, long n, long depth) // 64 bit version
+static void pseudo_or_deep_sort(Int32 *a, Int32 n, Int32 depth)
 {
 
-  // Int32 offset, text_pos, sb, pseudo_anchor_pos, max_offset, size;
-  long offset, text_pos, sb, pseudo_anchor_pos, max_offset, size;
+  Int32 offset, text_pos, sb, pseudo_anchor_pos, max_offset, size;
  
   // ------- search for a useful pseudo-anchor -------------
   if(Max_pseudo_anchor_offset>0) {
@@ -294,12 +244,12 @@ static void pseudo_or_deep_sort(long *a, long n, long depth) // 64 bit version
       sb = Get_small_bucket(pseudo_anchor_pos);
       // check if pseudo_anchor is in a sorted bucket
       if(IS_SORTED_BUCKET(sb)) {
-	      size=BUCKET_SIZE(sb);                     // size of group
-	      if(size>B2g_ratio*n) continue;            // discard large groups 
-	      // sort a[0] ... a[n-1] using pseudo_anchor
-	      pseudo_anchor_sort(a,n,pseudo_anchor_pos,offset);
-	      Calls_pseudo_anchor_sort_forw++;        // update count
-	      return;
+	size=BUCKET_SIZE(sb);                     // size of group
+	if(size>B2g_ratio*n) continue;            // discard large groups 
+	// sort a[0] ... a[n-1] using pseudo_anchor
+	pseudo_anchor_sort(a,n,pseudo_anchor_pos,offset);
+	Calls_pseudo_anchor_sort_forw++;        // update count
+	return;
       }
     }
   }
@@ -313,17 +263,12 @@ static void pseudo_or_deep_sort(long *a, long n, long depth) // 64 bit version
    a pseudo anchor since it is used essentially as an anchor, but
    it is not in an anchor position (=position multiple of Anchor_dist)
    ******************************************************************** */
-//static 
-//void pseudo_anchor_sort(Int32 *a,Int32 n,Int32 pseudo_anchor_pos, Int32 offset)
 static 
-void pseudo_anchor_sort(long *a,long n,long pseudo_anchor_pos, long offset) // 64 bit version
+void pseudo_anchor_sort(Int32 *a,Int32 n,Int32 pseudo_anchor_pos, Int32 offset)
 {
-  //Int32 get_rank(Int32);
-  //Int32 get_rank_update_anchors(Int32);
-  //Int32 pseudo_anchor_rank;
-  long get_rank(long);
-  long get_rank_update_anchors(long);
-  long pseudo_anchor_rank;
+  Int32 get_rank(Int32);
+  Int32 get_rank_update_anchors(Int32);
+  Int32 pseudo_anchor_rank;
 
   // ---------- compute rank ------------
   if(Update_anchor_ranks!=0 && Anchor_dist>0)
@@ -342,8 +287,7 @@ void pseudo_anchor_sort(long *a,long n,long pseudo_anchor_pos, long offset) // 6
    at least 32 bit and that the 32nd bit is not used
    This simply means that the text size can be at most 2GB
    ********************************************************* */
-//#define MARKER (1<<31)
-#define MARKER (1LL<<63) // 64 bit version; 1LL because it is of long long type
+#define MARKER (1<<31)
 #define MARK(i) {                \
   assert(( Sa[i]&MARKER) == 0);  \
   (Sa[i] |= MARKER);             \
@@ -364,19 +308,13 @@ void pseudo_anchor_sort(long *a,long n,long pseudo_anchor_pos, long offset) // 6
    After that, the ordering of a[0] ... a[n-1] is derived with a sigle
    scan of the marked suffixes.
    ******************************************************************** */
-//static void general_anchor_sort(Int32 *a, Int32 n, 
-//                         Int32 anchor_pos, Int32 anchor_rank, Int32 offset)
-// 64 bit version
-static void general_anchor_sort(long *a, long n, 
-                         long anchor_pos, long anchor_rank, long offset)
+static void general_anchor_sort(Int32 *a, Int32 n, 
+                         Int32 anchor_pos, Int32 anchor_rank, Int32 offset)
 {
   int integer_cmp(const void *, const void *);
-  //Int32 sb, lo, hi;
-  //Int32 curr_lo, curr_hi, to_be_found, i,j;
-  //Int32 item; 
-  long sb, lo, hi;
-  long curr_lo, curr_hi, to_be_found, i,j;
-  long item; 
+  Int32 sb, lo, hi;
+  Int32 curr_lo, curr_hi, to_be_found, i,j;
+  Int32 item; 
   void *ris;
 
   assert(Sa[anchor_rank]==anchor_pos);
@@ -386,8 +324,7 @@ static void general_anchor_sort(long *a, long n,
   hi = BUCKET_LAST(sb);
   assert(sb==Get_small_bucket(a[0]+offset));
   // ------ sort pointers a[0] ... a[n-1] as plain integers
-  //qsort(a,n, sizeof(Int32), integer_cmp);
-	qsort(a,n, sizeof(long), integer_cmp);
+  qsort(a,n, sizeof(Int32), integer_cmp);
 
   // ------------------------------------------------------------------
   // now we scan the bucket containing the anchor in search of suffixes
@@ -399,30 +336,23 @@ static void general_anchor_sort(long *a, long n,
   // the anchor must correspond to a suffix to be sorted
   #if DEBUG
   item = anchor_pos-offset;
-  //assert(bsearch(&item,a,n,sizeof(Int32), integer_cmp));
-  
-  assert(bsearch(&item,a,n,sizeof(long), integer_cmp)); // 64 bit version
+  assert(bsearch(&item,a,n,sizeof(Int32), integer_cmp));
   #endif
 
   MARK(curr_lo);
   // scan suffixes preceeding and following the anchor
   for(to_be_found=n-1;to_be_found>0; ) {
-    // invariant: the next positions to check are curr_lo-1 and curr_hi+1		
-		if (!(curr_lo > lo || curr_hi < hi)) {
-			printf("to_be_found =%lld lo = %lld, hi = %lld, curr_lo =  %lld curr_hi=%lld anchor_rank=%lld\n", (long long)to_be_found, (long long)lo, (long long)hi, (long long)curr_lo, (long long)curr_hi, (long long)anchor_rank);
-		}
-    assert(curr_lo > lo || curr_hi < hi); 
+    // invariant: the next positions to check are curr_lo-1 and curr_hi+1
+    assert(curr_lo > lo || curr_hi < hi);
     while (curr_lo > lo) {
       item = Sa[--curr_lo]-offset;
-      //ris = bsearch(&item,a,n,sizeof(Int32), integer_cmp);
-      ris = bsearch(&item,a,n,sizeof(long), integer_cmp); // 64 bit version
+      ris = bsearch(&item,a,n,sizeof(Int32), integer_cmp);
       if(ris)	{MARK(curr_lo); to_be_found--;}
       else	break;
     }
     while (curr_hi < hi) {
       item = Sa[++curr_hi]-offset;
-      // ris = bsearch(&item,a,n,sizeof(Int32), integer_cmp); 
-      ris = bsearch(&item,a,n,sizeof(long), integer_cmp); // 64 bit version
+      ris = bsearch(&item,a,n,sizeof(Int32), integer_cmp);
       if(ris)	{MARK(curr_hi); to_be_found--;}
       else      break;
     }
@@ -440,11 +370,9 @@ static void general_anchor_sort(long *a, long n,
    compute the rank of the suffix starting at pos.
    It is required that the suffix is in an already sorted bucket
    ******************************************************************** */
-//Int32 get_rank(Int32 pos)
-long get_rank(long pos)
+Int32 get_rank(Int32 pos)
 {
-  //Int32 sb, lo, hi, j;
-  long sb, lo, hi, j;
+  Int32 sb, lo, hi, j;
 
   sb = Get_small_bucket(pos);  
   if(!IS_SORTED_BUCKET(sb)) {
@@ -467,13 +395,10 @@ long get_rank(long pos)
    It is required that the suffix is in an already sorted bucket   
    ******************************************************************** */
 static UChar bucket_ranked[65536];
-//Int32 get_rank_update_anchors(Int32 pos)
-long get_rank_update_anchors(long pos) // 64 bit version
+Int32 get_rank_update_anchors(Int32 pos)
 {
-  //Int32 get_rank(Int32 pos);
-  //Int32 sb, lo, hi, j, toffset, aoffset, anchor, rank;
-  long get_rank(long);
-  long sb, lo, hi, j, toffset, aoffset, anchor, rank;
+  Int32 get_rank(Int32 pos);
+  Int32 sb, lo, hi, j, toffset, aoffset, anchor, rank;
 
   assert(Anchor_dist>0);
   // --- get bucket and verify it is a sorted one
@@ -515,27 +440,16 @@ long get_rank_update_anchors(long pos) // 64 bit version
    ****************************************************************** */
 int integer_cmp(const void *a, const void *b)
 {
-  // return *((long *) a) -  *((long *) b); // 64 bit version
-	int retValue = 0;
-	if (*((long *) a) >  *((long *)b)) {
-		retValue = 1;
-	}
-	else if (*((long *) a) <  *((long *) b)) {
-		retValue = -1;
-	}
-	return retValue; 
-
+  return *((Int32 *) a) -  *((Int32 *) b); 
 }
 
 /* ****************************************************************
    given a SORTED array of suffixes a[0] .. a[n-1]
    updates Anchor_rank[] and Anchor_offset[]
    **************************************************************** */
-//static void update_anchors(Int32 *a, Int32 n)
-static void update_anchors(long *a, long n) // 64 bit version
+static void update_anchors(Int32 *a, Int32 n)
 {
-  // Int32 i,anchor,toffset,aoffset,text_pos;
-  long i,anchor,toffset,aoffset,text_pos;
+  Int32 i,anchor,toffset,aoffset,text_pos;
 
   assert(Anchor_dist>0);
   for(i=0;i<n;i++) {
@@ -553,6 +467,7 @@ static void update_anchors(long *a, long n) // 64 bit version
   }
 }
  
+
 
 /* *******************************************************************
    This function takes as input an array a[0] .. a[n-1] of suffixes
@@ -573,18 +488,12 @@ static void update_anchors(long *a, long n) // 64 bit version
    ******************************************************************* */
 #define swap2(a, b) { t = *(a); *(a) = *(b); *(b) = t; }
 #define ptr2char(i) (*(*(i) + text_depth))
-//static 
-//Int32 split_group(Int32 *a, int n, int depth,int offset,Int32 pivot,int *first)
-static long split_group(long *a, long n, long depth, long offset,long pivot,long *first)
+static 
+Int32 split_group(Int32 *a, int n, int depth,int offset,Int32 pivot,int *first)
 {
-  //void vecswap2(Int32 *a, Int32 *b, int n);
-  //int r, partval;
-  //Int32 *pa, *pb, *pc, *pd, *pa_old, *pd_old, pivot_pos, t;
-  //UChar *text_depth,*text_limit;
-	void vecswap2(long *, long *, long ); // 64 bit version
-
-  long r, partval; // ?? int possibly enough
-  long *pa, *pb, *pc, *pd, *pa_old, *pd_old, pivot_pos, t;
+  void vecswap2(Int32 *a, Int32 *b, int n);
+  int r, partval;
+  Int32 *pa, *pb, *pc, *pd, *pa_old, *pd_old, pivot_pos, t;
   UChar *text_depth,*text_limit;
 
   // --------- initialization ------------------------------------

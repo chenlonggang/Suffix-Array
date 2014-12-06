@@ -47,20 +47,20 @@
    *********************************************************************** */
 
 //int *_lcp_sa2lcp_13n(uint8 *t, int n, int *sa)
-long *_lcp_sa2lcp_13n(UChar *t, long n, long *sa)
+Int64 *_lcp_sa2lcp_13n(UChar *t, Int64 n, Int64 *sa)
 {
   //int i,h,k,j, *lcp, *rank;
-  long i,h,k,j, *lcp, *rank;
+  Int64 i,h,k,j, *lcp, *rank;
 
   //lcp = (int*)malloc((n+1)*sizeof(int));
   //rank = (int*)malloc(n*sizeof(int));
-  lcp = (long*)malloc((n+1)*sizeof(long));// lcp[1,n] because sa[1,n]
+  lcp = (Int64*)malloc((n+1)*sizeof(Int64));// lcp[1,n] because sa[1,n]
   if(lcp==NULL) {
     return NULL;
   }
 
-  //rank = (long*)malloc(n*sizeof(long));
-  rank = (long*)malloc((n+1)*sizeof(long)); // rank[1,n] because sa[1,n] !!
+  //rank = (Int64*)malloc(n*sizeof(Int64));
+  rank = (Int64*)malloc((n+1)*sizeof(Int64)); // rank[1,n] because sa[1,n] !!
   //if(lcp==NULL || rank==NULL)
   //  return NULL;
   if (rank==NULL){
@@ -99,21 +99,21 @@ long *_lcp_sa2lcp_13n(UChar *t, long n, long *sa)
       This is alg. in Sect. 4 of "Space Conscious LCP computation" 26/3/04
    *********************************************************************** */
 //int *_lcp_jk_13n(uint8 *t, int n, int *sa)
-//long *_lcp_jk_13n(UChar *t, long n, long *sa)
+//Int64 *_lcp_jk_13n(UChar *t, Int64 n, Int64 *sa)
 //{
 //  //int i,h,j,k;
 //  //int *lcp, *plcp, *pred;
-//  long i,h,j,k;
-//  long *lcp, *plcp, *pred;
+//  Int64 i,h,j,k;
+//  Int64 *lcp, *plcp, *pred;
 //
 //  //lcp = (int*)malloc((n+1)*sizeof(int));
 //  //plcp = (int*)malloc(n*sizeof(int));  // lcp values ordered by starting position not rank
-//  lcp = (long*)malloc((n+1)*sizeof(long));
+//  lcp = (Int64*)malloc((n+1)*sizeof(Int64));
 //  if(lcp==NULL) {
 //    return NULL;
 //  }
 //
-//  plcp = (long*)malloc(n*sizeof(long));  // lcp values ordered by starting position not rank
+//  plcp = (Int64*)malloc(n*sizeof(Int64));  // lcp values ordered by starting position not rank
 //  pred = plcp;                         // lexicographic predecessors
 //  //if(lcp==NULL || plcp==NULL)
 //  //  return NULL;
@@ -162,20 +162,20 @@ long *_lcp_sa2lcp_13n(UChar *t, long n, long *sa)
      9n
    *********************************************************************** */
 //int *_lcp_sa2lcp_9n(uint8 *t, int n, int *sa, int *occ)
-long *_lcp_sa2lcp_9n(UChar *t, long n, long *sa, long *occ)
-//int *_lcp_sa2lcp_9n(UChar *t, long n, long *sa, long *occ) /* lcp points to the rank_next array, so it must have the same type long */
+Int64 *_lcp_sa2lcp_9n(UChar *t, Int64 n, Int64 *sa, Int64 *occ)
+//int *_lcp_sa2lcp_9n(UChar *t, Int64 n, Int64 *sa, Int64 *occ) /* lcp points to the rank_next array, so it must have the same type Int64 */
 {
   //int i,h,j,k,nextk=-1;
-  long i,h,j,k,nextk=-1LL;
+  Int64 i,h,j,k,nextk=-1LL;
 	// int *rn;
 	//int *lcp;
-  long *rn;
-	long *lcp;
+  Int64 *rn;
+	Int64 *lcp;
 
-  lcp = (long*)malloc((n+1)*sizeof(long));
-	/* 64-bit version: long is 8 bytes, so this is too memory consuming! lcp should keep elements which are 4bytes and 
+  lcp = (Int64*)malloc((n+1)*sizeof(Int64));
+	/* 64-bit version: Int64 is 8 bytes, so this is too memory consuming! lcp should keep elements which are 4bytes and 
 	* in case that some lcp-value is > INT_MAX, return null.
-	* Unfortunately, lcp has to stay long since it uses the rank_next array location's and rank_next array can contain long values!!
+	* Unfortunately, lcp has to stay Int64 since it uses the rank_next array location's and rank_next array can contain Int64 values!!
 	*/
 	//printf("Lcp tab memory:%lld\n", (n+1)*sizeof(int));
 	//lcp = (int*)malloc((n+1)*sizeof(int));
@@ -232,13 +232,13 @@ long *_lcp_sa2lcp_9n(UChar *t, long n, long *sa, long *occ)
      (6 + delta)n, where delta=(4*num)/n
    *********************************************************************** */
 //int _lcp_sa2lcp_6n(uint8 *t, bwt_data *b, int *sa, int *occ)
-//long _lcp_sa2lcp_6n(UChar *t, bwt_data *b, long *sa, long *occ) 
+//Int64 _lcp_sa2lcp_6n(UChar *t, bwt_data *b, Int64 *sa, Int64 *occ) 
 //
 //{
 //  //int i,h,j,k,num,num2,nextk=-1,n=b->size;
 //  //int *rn=sa, *lcp=sa, *sa_aux;
-//  long i,h,j,k,num,num2,nextk=-1LL,n=b->size;
-//  long *rn=sa, *lcp=sa, *sa_aux;
+//  Int64 i,h,j,k,num,num2,nextk=-1LL,n=b->size;
+//  Int64 *rn=sa, *lcp=sa, *sa_aux;
 //
 //  // ----- dirty trick: make b->bwt[eof_pos] different from 
 //  //       b->bwt[eof_pos-1] and b->bwt[eof_pos+1]
@@ -254,7 +254,7 @@ long *_lcp_sa2lcp_9n(UChar *t, long n, long *sa, long *occ)
 //
 //  // ---------- alloc extra memory -----------
 //  //sa_aux = (int *) malloc(num*sizeof(int));
-//  sa_aux = (long *) malloc(num*sizeof(long));
+//  sa_aux = (Int64 *) malloc(num*sizeof(Int64));
 //  if(sa_aux==NULL)
 //    return -1;
 // 
@@ -319,13 +319,13 @@ long *_lcp_sa2lcp_9n(UChar *t, long n, long *sa, long *occ)
 #define MARKER (1LL<<63)
 
 //int *_lcp_vmjk_9125n(UChar *t, int n, int *sa)
-long *_lcp_vmjk_9125n(UChar *t, long n, long *sa)
+Int64 *_lcp_vmjk_9125n(UChar *t, Int64 n, Int64 *sa)
 {
   //int i,h,k,j, end, *lcp, *plcp, *rank;
-  long i,h,k,j, end, *lcp, *plcp, *rank;
+  Int64 i,h,k,j, end, *lcp, *plcp, *rank;
 
   //lcp = (int*)malloc((n+1)*sizeof(int));
-  lcp = (long*)malloc((n+1)*sizeof(long));
+  lcp = (Int64*)malloc((n+1)*sizeof(Int64));
   if(lcp==NULL)
     return NULL;
 

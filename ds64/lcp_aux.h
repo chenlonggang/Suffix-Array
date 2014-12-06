@@ -15,14 +15,14 @@
 ////int _lcp_sa2lcp_5125nme(uint8 *t, int n, int *sa, int *occ); // definition is not included in the project!!
 
 // 64-bit version of code
-long *_lcp_sa2lcp_13n(UChar *t, long n, long *sa); 
+Int64 *_lcp_sa2lcp_13n(UChar *t, Int64 n, Int64 *sa); 
 
-long *_lcp_jk_13n(UChar *t, long n, long *sa); //there is a definition in lcp_aux.c, so I've added a declaration in here!
+Int64 *_lcp_jk_13n(UChar *t, Int64 n, Int64 *sa); //there is a definition in lcp_aux.c, so I've added a declaration in here!
 
-long *_lcp_vmjk_9125n(UChar *t, long n, long *sa);
-long *_lcp_sa2lcp_9n(UChar *t, long n, long *sa, long *occ);
-//int *_lcp_sa2lcp_9n(UChar *t, long n, long *sa, long *occ);
-//long _lcp_sa2lcp_6n(UChar *t, bwt_data *b, long *sa, long *occ); // bwt_data --> defined in bwt_aux.h
+Int64 *_lcp_vmjk_9125n(UChar *t, Int64 n, Int64 *sa);
+Int64 *_lcp_sa2lcp_9n(UChar *t, Int64 n, Int64 *sa, Int64 *occ);
+//int *_lcp_sa2lcp_9n(UChar *t, Int64 n, Int64 *sa, Int64 *occ);
+//Int64 _lcp_sa2lcp_6n(UChar *t, bwt_data *b, Int64 *sa, Int64 *occ); // bwt_data --> defined in bwt_aux.h
 
 
 

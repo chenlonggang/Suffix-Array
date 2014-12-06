@@ -19,21 +19,16 @@
 #ifndef INT64
 #define INT64
 
-	typedef  long long Int64;
+	typedef long long Int64;
 
 #endif // INT64
 
 #ifndef UINT64
 #define UINT64
 
-	typedef unsigned  long long UInt64;
+	typedef unsigned long long UInt64;
 
 #endif // UINT64
-
-#ifndef ULONG
-#define ULONG
-	typedef unsigned long ulong;
-#endif
 
 #ifndef UCHAR
 #define UCHAR
@@ -85,7 +80,7 @@ typedef unsigned char		Bool;
 // to avoid referring to the constants 256 and 65535 in the code in the case of changing the size of alphabet
 
 //int scmp3(unsigned char *p, unsigned char *q, int *l, int maxl);
-long scmp3(unsigned char *p, unsigned char *q, long *l, long maxl); // 64 bit version
+Int64 scmp3(unsigned char *p, unsigned char *q, Int64 *l, Int64 maxl); // 64 bit version
 void pretty_putchar(int c);
 
 #endif //COMMON_H

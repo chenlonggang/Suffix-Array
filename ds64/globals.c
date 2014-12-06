@@ -30,30 +30,30 @@
 
 // *********************** 64 bit version ***********************
 
-long Anchor_dist;							// distance between anchors 
-long Shallow_limit;						// limit for shallow_sort 
+Int64 Anchor_dist;							// distance between anchors 
+Int64 Shallow_limit;						// limit for shallow_sort 
 
 int _ds_Verbose;                // how verbose it the algorithm?
 int _ds_Word_size;              // # of bytes in word in mkqs (1, 2, 4, 8??)
 
-long Mk_qs_thresh;            // recursion limit for mk quicksort:
+Int64 Mk_qs_thresh;            // recursion limit for mk quicksort:
 
-long Max_pseudo_anchor_offset; // maximum offset considered when 
+Int64 Max_pseudo_anchor_offset; // maximum offset considered when 
                                 // searching a pseudo anchor
 
-long B2g_ratio;                // maximum ratio bucket_size/group_size
+Int64 B2g_ratio;                // maximum ratio bucket_size/group_size
                                 // accepted for pseudo anchor_sorting
 
-long Update_anchor_ranks;      // if!=0 update anchor ranks when determining
+Int64 Update_anchor_ranks;      // if!=0 update anchor ranks when determining
                                 // rank for pseudo-sorting
 
-long Blind_sort_ratio;         // blind sort is used for groups of size 
+Int64 Blind_sort_ratio;         // blind sort is used for groups of size 
                                 // <= Text_size/Blind_sort_ratio
 
 
 int check_global_variables(void);
 void set_global_variables(void);
-long compute_overshoot(void);
+Int64 compute_overshoot(void);
 
 /* *******************************************************************
    procedure to be called by external program before calling ds_ssort()
@@ -64,7 +64,7 @@ long compute_overshoot(void);
    required at the end of the array contanining the text
    ******************************************************************** */
 //int init_ds_ssort(int adist, int bs_ratio)
-long init_ds_ssort(long adist, long bs_ratio)
+Int64 init_ds_ssort(Int64 adist, Int64 bs_ratio)
 {
   set_global_variables();
   Anchor_dist = adist;
@@ -131,7 +131,7 @@ int check_global_variables(void)
 
 // compute the amount of extra memory required 
 // for the input text 
-long compute_overshoot(void)
+Int64 compute_overshoot(void)
 {
   return 9 + (Shallow_limit + Cmp_overshoot);
 }
@@ -152,9 +152,9 @@ void pretty_putchar(int c)
 
 
 //int scmp3(unsigned char *p, unsigned char *q, int *l, int maxl)
-long scmp3(unsigned char *p, unsigned char *q, long *l, long maxl) // 64 bit version
+Int64 scmp3(unsigned char *p, unsigned char *q, Int64 *l, Int64 maxl) // 64 bit version
 {
-   long i;
+   Int64 i;
    i = 0;
    while (maxl>0 && *p==*q) {
       p++; q++; i++;

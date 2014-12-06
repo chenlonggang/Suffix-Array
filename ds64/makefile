@@ -1,16 +1,15 @@
 CC=gcc
 # with profiling & debugging:
-#CFLAGS= -O0 -m64 -g -Wall -Wshadow -pedantic -#D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -std=c99#-mcmodel=medium
-#  without profiling & debugging:
-CFLAGS= -O3 -Wall -Wshadow -pedantic  -std=c99 -DUNIX #-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -std=c99 -DUNIX #-m64 
+#CFLAGS= -O0 -m64 -g -Wall -Wshadow -pedantic -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -std=c99#-mcmodel=medium
+# without profiling & debugging:
+CFLAGS= -O3 -Wall -Wshadow -pedantic -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -std=c99 -DUNIX #-m64 
 #CFLAGS= -g -Wall -Wshadow -pedantic -DSTRMAT -DSTATS
 #CFLAGS= -O3 -DSTRMAT -DSTATS
 
  .PHONY: all
- all : sa ds_ssort.a bwtlcp.a 
+ all : sa  ds_ssort.a bwtlcp.a 
 
-
-sa:main.cpp ds_ssort.a
+sa:main.cpp ds_ssort.h ds_ssort.a
 	g++ main.cpp -o sa ds_ssort.a
 
 #
@@ -64,7 +63,7 @@ lint :
 	lint $(SRCFILES) | more
 
 clean: 
-	rm -f *.o *.a sa
+	rm -f *.o *.a testLcp sa
 
 remove: clean
 	rm -f $(EXECFILE)

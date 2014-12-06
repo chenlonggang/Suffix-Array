@@ -6,19 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include <assert.h>
 #include "common.h"
+
 
 /* ------ external global variables ------- */
 extern UChar  *Text;                   // input string+ overshoot
 extern UChar  *Upper_text_limit;       // Text+Text_size
-//extern Int32  Text_size;               // size of input string
-//extern Int32  Blind_sort_ratio;        // ratio for using blind_sort
-//extern Int32 Calls_deep_sort;     
-// 64 bit version
-extern long  Text_size;               // size of input string
-extern long  Blind_sort_ratio;        // ratio for using blind_sort
-extern long Calls_deep_sort;     
+extern Int32  Text_size;               // size of input string
+extern Int32  Blind_sort_ratio;        // ratio for using blind_sort
+extern Int32 Calls_deep_sort;     
 
 /* ***********************************************************************
    Function to compare two strings originating from the *b1 and *b2
@@ -27,16 +23,9 @@ extern long Calls_deep_sort;
    the function return the result of the comparison (+ or -) and writes 
    in Cmp_done the number of successfull comparisons done
    *********************************************************************** */ 
-static Int32 Cmp_done; // ?? ok for 64 bit version
-
-//__inline__ // the static type was added to avoid the warning 
-// "'Cmp_done' is static but used in inline function 'cmp_unrolled_lcp' which is not static"
-// and since this function is only used in this file
-#if UNIX
-	static __inline__ Int32 cmp_unrolled_lcp(UChar *b1, UChar *b2) { // ?? return type can stay Int32
-#elif WIN
-	static __inline Int32 cmp_unrolled_lcp(UChar *b1, UChar *b2) { // ?? return type can stay Int32
-#endif
+static Int32 Cmp_done;
+Int32 cmp_unrolled_lcp(UChar *b1, UChar *b2)
+{
 
   UChar c1, c2;
   assert(b1 != b2);
@@ -141,25 +130,16 @@ static Int32 Cmp_done; // ?? ok for 64 bit version
 #define Swap(i,j) {tmp=a[i]; a[i]=a[j]; a[j]=tmp;}
 #define Pushd(x,y,z) {stack_lo[sp]=x; stack_hi[sp]=y; stack_d[sp]=z; sp++;}
 #define Popd(x,y,z)  {sp--; x=stack_lo[sp]; y=stack_hi[sp]; z=stack_d[sp];} 
-
-//void qs_unrolled_lcp(Int32 *a, int n, int depth, int blind_limit)
-void qs_unrolled_lcp(long *a, long n, long depth, long blind_limit) // 64 bit version
+void qs_unrolled_lcp(Int32 *a, int n, int depth, int blind_limit)
 { 
-  //void blind_ssort(Int32 *a, Int32 n, Int32 depth);
-  void blind_ssort(long *, long , long ); // 64 bit version
-  //__inline__ Int32 cmp_unrolled_lcp( UChar *b1, UChar *b2 );
-  
+  void blind_ssort(Int32 *a, Int32 n, Int32 depth);
+  /*  __inline__ Int32 cmp_unrolled_lcp( UChar *b1, UChar *b2 );*/
   UChar *text_depth, *text_pos_pivot;
-  //Int32 stack_lo[STACK_SIZE];
-  //Int32 stack_hi[STACK_SIZE];
-  //Int32 stack_d[STACK_SIZE];
-  //Int32 sp,r,r3,med,tmp;
-  //Int32 i, j, lo, hi,ris,lcp_lo,lcp_hi;
-  long stack_lo[STACK_SIZE];
-  long stack_hi[STACK_SIZE];
-  long stack_d[STACK_SIZE];
-  long sp,r,r3,med,tmp;
-  long i, j, lo, hi,ris,lcp_lo,lcp_hi;
+  Int32 stack_lo[STACK_SIZE];
+  Int32 stack_hi[STACK_SIZE];
+  Int32 stack_d[STACK_SIZE];
+  Int32 sp,r,r3,med,tmp;
+  Int32 i, j, lo, hi,ris,lcp_lo,lcp_hi;
 
   // ----- init quicksort --------------
   r=sp=0;
@@ -181,7 +161,7 @@ void qs_unrolled_lcp(long *a, long n, long depth, long blind_limit) // 64 bit ve
        7621 and 32768 is taken from Sedgewick's algorithms
        book, chapter 35.
     */
-    r = ((r * 7621) + 1) % 32768; // ?? change for 64 bit version
+    r = ((r * 7621) + 1) % 32768;
     r3 = r % 3;
     if (r3 == 0) med = lo; else
     if (r3 == 1) med = (lo+hi)>>1; else
@@ -191,9 +171,7 @@ void qs_unrolled_lcp(long *a, long n, long depth, long blind_limit) // 64 bit ve
     Swap(med,hi);  // put the pivot at the right-end
     text_pos_pivot=text_depth+a[hi];
     i=lo-1; j=hi; 
-    //lcp_lo=lcp_hi=INT_MAX;
-    lcp_lo=lcp_hi=LLONG_MAX;
-
+    lcp_lo=lcp_hi=INT_MAX;
     while(1) {
       while(++i<hi) {
 	ris=cmp_unrolled_lcp(text_depth+a[i], text_pos_pivot);
@@ -212,10 +190,8 @@ void qs_unrolled_lcp(long *a, long n, long depth, long blind_limit) // 64 bit ve
     Swap(i,hi);  // put pivot at the middle
 
     // ---- testing ---------
-    //assert(lcp_lo<INT_MAX || i==lo);
-    //assert(lcp_hi<INT_MAX || i==hi);
-    assert(lcp_lo<LLONG_MAX || i==lo); // 64 bit version _I64_MAX
-    assert(lcp_hi<LLONG_MAX || i==hi);
+    assert(lcp_lo<INT_MAX || i==lo);
+    assert(lcp_hi<INT_MAX || i==hi);
 
     // --------- insert subproblems in stack; smallest last
     if(i-lo < hi-i) {
@@ -223,8 +199,7 @@ void qs_unrolled_lcp(long *a, long n, long depth, long blind_limit) // 64 bit ve
       if(i-lo>1) Pushd(lo,i-1,depth+lcp_lo);
     }
     else {
-      Pushd(lo,
-        i-1,depth+lcp_lo);
+      Pushd(lo,i-1,depth+lcp_lo);
       if(hi-i>1) Pushd(i+1,hi,depth+lcp_hi);
     }
   }
@@ -236,12 +211,10 @@ void qs_unrolled_lcp(long *a, long n, long depth, long blind_limit) // 64 bit ve
    routine for deep-sorting the suffixes a[0] ... a[n-1]
    knowing that they have a common prefix of length "depth"
   **************************************************************** */   
-//void deep_sort(Int32 *a, Int32 n, Int32 depth)
-void deep_sort(long *a, long n, long depth) //64 bit version
+void deep_sort(Int32 *a, Int32 n, Int32 depth)
 {
-  void blind_ssort(long *, long , long );
-  //int blind_limit;
-  long blind_limit;
+  void blind_ssort(Int32 *a, Int32 n, Int32 depth);
+  int blind_limit;
 
   Calls_deep_sort++;    
   assert(n>1);    // test to discover useless calls
