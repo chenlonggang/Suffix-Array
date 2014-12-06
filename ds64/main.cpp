@@ -9,7 +9,7 @@ int main(){
 	unsigned char * T;
 	unsigned long long n;
 	long long int * sa;
-	char * file=(char *)"main.cpp";
+	char * file=(char *)"/home/chen/code/csa/data/kernel";
 	Getfile(file,&T,&n);
 	sa=new long long int[n];
 	struct timeval start;
@@ -18,10 +18,10 @@ int main(){
 	ds_ssort(T,sa,n);
 	gettimeofday(&end,NULL);
 	cout<<"build time "<<(end.tv_sec-start.tv_sec)<<"s"<<endl;
-
+/*
 	for(long i=0;i<n;i++)
 		cout<<sa[i]<<endl;
-	
+*/	
 	return 0;
 }
 void Getfile(char *filename,unsigned char **T,unsigned long long *length)
