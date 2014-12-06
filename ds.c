@@ -46,7 +46,7 @@ UInt32  *Anchor_offset;     // offset (wrt to the anchor) of the suffix ??
 //Int32 ftab [65537];      
 //Int32 runningOrder[256];
 long Anchor_num;           // number of anchor points ??
-long ftab [65537];         // the array of subbuckets for the alphabet 256 x 256
+Int64 ftab [65537];         // the array of subbuckets for the alphabet 256 x 256
 long runningOrder[ALPHABET_SIZE];    // ??
 
 

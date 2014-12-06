@@ -9,7 +9,7 @@ int main(){
 	unsigned char * T;
 	unsigned long  n;
 	long  int * sa;
-	char * file=(char *)"/home/chen/code/csa/data/news";
+	char * file=(char *)"data";
 	Getfile(file,&T,&n);
 	sa=new long int[n];
 	struct timeval start;
