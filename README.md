@@ -11,8 +11,10 @@ Div is faster than DS.You can find more details in README of div
 just run make,then ds-ssort.a will be there.
 ##div
 1.delete Makefile and CMakeCache.txt if exist.  
-2.run "cmake .",libdivsufsort.so for 32-bit OS will be created by default.  
+2.run "cmake .", libdivsufsort.so for 32-bit OS will be created by default.  
 3.if you want to handle large file(>2GB),run "cmake -DBUILD_DIVSUFSORT64:BOOL=ON ."  
-  libdivsufsort64.so will be created for 64-bit OS.  
-4.if you want use .a lib,not .so,and "-DBUILD_SHARED_LIBS:BOOL=OFF"  
+4.then,libdivsufsort64.so will be created for 64-bit OS.  
+5.if you need XX.a lib,not XX.so,and "-DBUILD_SHARED_LIBS:BOOL=OFF"  
+6.so if you run "cmake -DBUILD_DIVSUFSORT64:BOOL=ON -DBUILD_SHARED_LIBS:BOOL=OFF ."  
+libdivsufsort64.a will be there
 
