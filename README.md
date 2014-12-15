@@ -7,6 +7,5 @@ and get the div code from [here](https://code.google.com/p/libdivsufsort/downloa
 Div is faster than DS.You can find more details in README of div
 
 #How to Build 
-##ds
 just run make,then **.a will be there.
 
